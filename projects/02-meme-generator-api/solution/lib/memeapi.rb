@@ -11,13 +11,7 @@ class MemeApi < Sinatra::Application
     end
   end
 
-  
-  MemeApi.get '/' do
-    status 200
-  end
-
-
-  MemeApi.post '/memes' do
+  post '/memes' do
     req = RequestImage.new(request.body.read)
     halt req.status, req.message if req.status == 400
     image_name = req.create_image
@@ -28,7 +22,7 @@ class MemeApi < Sinatra::Application
   end
 
 
-  MemeApi.get '/memes/:file' do
+  get '/memes/:file' do
     path = Pathname(__dir__).join("../images/#{params[:file]}")
     send_file(path)
   end

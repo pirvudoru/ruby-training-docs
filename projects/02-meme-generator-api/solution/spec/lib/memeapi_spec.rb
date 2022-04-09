@@ -7,7 +7,6 @@ RSpec.describe MemeApi do
     MemeApi 
   end
 
-
   describe "POST /memes" do
     it "returns status 303 and redirect link" do
       body = {
@@ -33,7 +32,6 @@ RSpec.describe MemeApi do
 
       post '/memes', body.to_json, { 'CONTENT_TYPE' => 'application/json' }
       expect(last_response.status).to eq 404
-
     end
 
     it "returns status 400 for missing keys in body" do
@@ -45,7 +43,6 @@ RSpec.describe MemeApi do
 
       post '/memes', body.to_json, { 'CONTENT_TYPE' => 'application/json' }
       expect(last_response.status).to eq 400
-
     end
 
     it "returns status 400 for empty body" do
@@ -57,11 +54,6 @@ RSpec.describe MemeApi do
 
 
   describe "GET" do          
-      it "returns no todo" do
-        get "/"
-        expect(last_response.status).to eq 200
-      end
-
       it "returns an image type" do
         get "/memes/test.original.jpg"
         expect(last_response.content_type).to eq 'image/jpeg'
