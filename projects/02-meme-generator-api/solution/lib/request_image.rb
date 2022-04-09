@@ -14,14 +14,15 @@ class RequestImage
       image_url = @body['meme']['image_url']
       text = @body['meme']['text']
       image_path = Download.download_image(image_url)
-      if image_path == 'Download failed'
-        @status = 404
-        @image_name = nil
-      else
-        response = ImageCreator.create_meme(image_path, text)
-        @status = response[0]
-        @image_name = response[1]
-      end
+
+      response = ImageCreator.create_meme(image_path, text)
+      @status = response[0]
+      @image_name = response[1]
+      
+    rescue Download::Error
+      @status = 404
+      @image_name = nil
+      
     end
 
     private
