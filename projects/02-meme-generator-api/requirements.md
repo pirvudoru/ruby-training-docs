@@ -30,7 +30,7 @@ Example:
 Request: 
 
 ```
-POST /memems
+POST /memes
 ```
 
 Request body 
