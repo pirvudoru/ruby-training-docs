@@ -19,6 +19,8 @@ class MemeApi < Sinatra::Application
     return req.status if req.status != 303
     
     redirect "/memes/#{req.image_name}", req.status
+    rescue StandardError => e
+      pp e
   end
 
 

@@ -5,13 +5,9 @@ class Download
     def download_image(url)
       begin
         file = Down.download(url) 
-        if File.extname(url) != ""
-          FileUtils.mv(file.path, "./temp/#{file.original_filename}")
-          file.original_filename 
-        else
-          FileUtils.mv(file.path, "./temp/#{file.original_filename}.jpg")
-          file.original_filename + '.jpg'
-        end
+        destination_path = "./temp/#{file.original_filename}"
+        FileUtils.mv(file.path, destination_path)
+        destination_path
       rescue StandardError => e
         'Download failed'
       end

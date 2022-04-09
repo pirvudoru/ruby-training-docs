@@ -6,7 +6,9 @@ RSpec.describe Download do
 
     subject(:download) { Download.download_image(url) }
 
-    it { is_expected.to eq File.basename(url) }
+    it 'saves the file locally' do
+      expect(File.exist?(download)).to be true
+    end
 
     context 'bad url for photos' do
       let(:url) { 'sdwqjksad' }
