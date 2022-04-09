@@ -4,10 +4,7 @@ class ImageCreator
   class << self
     include MiniMagick
 
-    def create_meme(image_url, text)
-      image_name = Download.download_image(image_url)
-      return [404, nil] if image_name == 'Download failed'
-
+    def create_meme(image_name, text)
       image = MiniMagick::Image.new("./temp/#{image_name}")
       image.combine_options do |c|
         c.gravity "center"

@@ -12,7 +12,7 @@ class Download
           FileUtils.mv(file.path, "./temp/#{file.original_filename}.jpg")
           file.original_filename + '.jpg'
         end
-      rescue
+      rescue StandardError => e
         'Download failed'
       end
     end

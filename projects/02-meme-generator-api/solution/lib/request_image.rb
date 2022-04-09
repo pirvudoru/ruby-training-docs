@@ -13,10 +13,15 @@ class RequestImage
     def create_image
       image_url = @body['meme']['image_url']
       text = @body['meme']['text']
-      response = ImageCreator.create_meme(image_url, text)
-      @status = response[0]
-      @image_name = response[1]
-      @image_name
+      image_name = Download.download_image(image_url)
+      if image_name == 'Download failed'
+        @status = 404
+        @image_name = nil
+      else
+        response = ImageCreator.create_meme(image_name, text)
+        @status = response[0]
+        @image_name = response[1]
+      end
     end
 
     private
