@@ -22,19 +22,14 @@ class RequestImage
     private
   
     def validate_params
-      if missing_params? || @body.size == 0
+      unless missing_params?
         @status = 400
         @message = 'Request sent without parameters or with wrong parameters'
       end
     end
 
     def missing_params?
-      missing_keys.size > 0
+      expected_keys = %w[image_url text]
+      (@body['meme'].keys & expected_keys).size == expected_keys.size
     end
-  
-    def missing_keys
-      expected_keys = ['image_url', 'text']
-      @body['meme'].select { |k, _| !expected_keys.include?(k) }
-    end
-
 end
