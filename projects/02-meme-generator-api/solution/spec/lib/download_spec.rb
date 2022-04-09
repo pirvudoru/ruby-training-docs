@@ -11,7 +11,7 @@ RSpec.describe Download do
     context 'bad url for photos' do
       let(:url) { 'sdwqjksad' }
 
-      it { is_expected.to be nil }
+      it { is_expected.to eq 'Download failed' }
     end
   end
 end

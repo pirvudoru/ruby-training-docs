@@ -23,7 +23,6 @@ class RequestImage
   
     def validate_params
       if missing_params? || @body.size == 0
-        puts 'a intrat aici'
         @status = 400
         @message = 'Request sent without parameters or with wrong parameters'
       end
