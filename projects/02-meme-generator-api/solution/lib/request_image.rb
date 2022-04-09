@@ -22,7 +22,7 @@ class RequestImage
     private
   
     def validate_params
-      unless missing_params?
+      if @body.empty? || missing_params? 
         @status = 400
         @message = 'Request sent without parameters or with wrong parameters'
       end
@@ -30,6 +30,6 @@ class RequestImage
 
     def missing_params?
       expected_keys = %w[image_url text]
-      (@body['meme'].keys & expected_keys).size == expected_keys.size
+      !((@body['meme'].keys & expected_keys).size == expected_keys.size)
     end
 end

@@ -43,7 +43,7 @@ describe "POST /memes" do
 
   end
 
-  it "returns status 400 for wrong request body" do
+  it "returns status 400 for missing keys in body" do
     body = {
       "meme":{
         "image_url": "https://s3.amazonaws.com/com.twilio.prod.twilio-docs/images/test.original.jpg"
@@ -51,6 +51,13 @@ describe "POST /memes" do
     }
 
     post '/memes', body.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+    expect(last_response.status).to eq 400
+
+  end
+
+  it "returns status 400 for empty body" do
+    post '/memes', '{}', { 'CONTENT_TYPE' => 'application/json' }
 
     expect(last_response.status).to eq 400
 
