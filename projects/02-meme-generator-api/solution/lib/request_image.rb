@@ -17,12 +17,10 @@ class RequestImage
 
       response = ImageCreator.create_meme(image_path, text)
       @status = response[0]
-      @image_name = response[1]
-      
+      @image_name = response[1] 
     rescue Download::Error
       @status = 404
       @image_name = nil
-      
     end
 
     private
