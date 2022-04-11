@@ -17,7 +17,7 @@ class ImageCreator
       image_name = File.basename(image_path)
       path_to_meme = "./images/#{image_name}"
       image.write(path_to_meme) 
-      [303, image_name]
+      image_name
     end
   end
 end
