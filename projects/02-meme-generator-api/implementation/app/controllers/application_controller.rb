@@ -16,15 +16,18 @@ class ApplicationController < Sinatra::Base
     erb :memes_form
   end
 
-  enable :sessions
-
   post '/meme' do
     @meme = Meme.new
     @meme.image_url = params[:image_url]
     @meme.text = params[:text]
-    @meme.create
 
-    redirect "/meme/#{@meme.file_name}", 303
+    begin
+      @meme.create
+    rescue
+      status 400
+    else
+      redirect "/meme/#{@meme.file_name}", 303
+    end
   end
 
   get '/meme/:file_name' do
