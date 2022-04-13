@@ -4,26 +4,27 @@ require 'sinatra/base'
 require './app/models/meme'
 
 class ApplicationController < Sinatra::Base
-  configure do
-    set :views, 'app/views'
+  module ContentType
+    JSON = 'application/json'
+  end
+
+  before do
+    @request_body_json = JSON.parse(request.body.read) if request.content_type == ContentType::JSON
+    request.body.rewind
   end
 
   get '/' do
-    erb :index
+    status 200
   end
 
-  get '/memes' do
-    erb :memes_form
-  end
-
-  post '/meme' do
+  post '/memes' do
     @meme = Meme.new
-    @meme.image_url = params[:image_url]
-    @meme.text = params[:text]
+    @meme.image_url = @request_body_json['meme']['image_url']
+    @meme.text = @request_body_json['meme']['text']
 
     begin
       @meme.create
-    rescue
+    rescue StandardError
       status 400
     else
       redirect "/meme/#{@meme.file_name}", 303
