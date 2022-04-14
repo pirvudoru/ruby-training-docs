@@ -1,7 +1,7 @@
 require 'sinatra/base'
 require './lib/download'
 require 'pry'
-require './lib/meme_validator'
+require './lib/validators/meme_validator'
 require './lib/image_creator'
 
 class MemeApi < Sinatra::Application
@@ -24,10 +24,10 @@ class MemeApi < Sinatra::Application
       status 400
   end
 
-
   get '/memes/:file' do
     path = Pathname(__dir__).join("../images/#{params[:file]}")
     send_file(path)
   end
-
+  
+  
 end

@@ -1,4 +1,4 @@
-require './lib/meme_validator'
+require './lib/validators/meme_validator'
 
 RSpec.describe MemeValidator do
   describe '.validate_image' do
