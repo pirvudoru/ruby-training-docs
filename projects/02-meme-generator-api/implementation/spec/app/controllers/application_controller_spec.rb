@@ -68,3 +68,95 @@ describe 'GET /meme/:file_name' do
     # check if image is the same as created file
   end
 end
+
+describe 'POST /signup' do
+  let(:request_body) {
+    {
+      user: {
+        'username': 'mr_bean',
+        'password': 'test123'
+      }
+    }
+  }
+
+  it 'creates a user record' do
+    post '/signup', request_body, { 'CONTENT_TYPE' => 'application/json' }
+
+    expect(last_response.status).to eq(201)
+    expect(last_response.body).to include('user', 'token')
+  end
+
+  context 'giving invalid request body' do
+    let(:request_body) {
+      {
+        cat: {
+          'color': 'blue',
+          'language': 'miau'
+        }
+      }
+    }
+
+    it 'returns error code 400' do
+      post '/signup', request_body, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to eq(400)
+    end
+  end
+
+  context 'giving a blank username' do
+    let(:request_body) {
+      {
+        user: {
+          'username': '',
+          'password': 'test123'
+        }
+      }
+    }
+
+    it 'returns 400 error code with Username is blank message' do
+      post '/signup', request_body, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to eq(400)
+      expect(last_response.body).to include('{ "errors": [{"message": "Username is blank"}] }')
+    end
+  end
+
+  context 'giving a blank password' do
+    let(:request_body) {
+      {
+        user: {
+          'username': 'mr_bean',
+          'password': ''
+        }
+      }
+    }
+
+    it 'returns 400 error code with Password is blank message' do
+      post '/signup', request_body, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to eq(400)
+      expect(last_response.body).to include('{ "errors": [{"message": "Password is blank"}] }')
+    end
+  end
+
+  context 'user already exists' do
+    let(:request_body) {
+      {
+        user: {
+          'username': 'mr_bean',
+          'password': 'test123'
+        }
+      }
+    }
+
+    it 'returns 409 error code' do
+      post '/signup', request_body, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to eq(409)
+    end
+  end
+
+  after(:all) do
+    # delete here the entrance created by the test from the database
+  end
+end
