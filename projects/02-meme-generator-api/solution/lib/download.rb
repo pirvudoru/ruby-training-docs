@@ -2,9 +2,7 @@ require "down"
 
 class Download
   class Error < StandardError
-    def initialize(message)
-      @message = message
-    end
+    
   end
 
   class << self 
@@ -15,7 +13,7 @@ class Download
         FileUtils.mv(file.path, destination_path)
         destination_path
       rescue Down::Error => e
-        raise Download::Error.new('Failed download')
+        raise Download::Error
       end
     end
   end

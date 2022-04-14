@@ -1,8 +1,8 @@
 require 'sinatra/base'
 require './lib/download'
-require './lib/request_image'
 require 'pry'
-require './lib/validator'
+require './lib/meme_validator'
+require './lib/image_creator'
 
 class MemeApi < Sinatra::Application
 
@@ -13,19 +13,15 @@ class MemeApi < Sinatra::Application
   end
 
   post '/memes' do
-    #req = RequestImage.new(request.body.read)
-    #halt req.status, req.message if req.status == 400
-    #image_name = req.create_image
     json_body = JSON.parse(request.body.read)
-    validation = Validator.validate_image(json_body)
-    unless validation
-      halt 400, validation.message
-    end
+    MemeValidator.validate_image(json_body)
     image_path = Download.download_image(json_body['meme']['image_url'])
     image_name = ImageCreator.create_meme(image_path, json_body['meme']['text'])
     redirect "/memes/#{image_name}", 303
     rescue Download::Error => e
-      halt 404, e.message
+      status 404
+    rescue MemeValidator::Error => e
+      status 400
   end
 
 

@@ -1,5 +1,4 @@
-require './lib/memeapi.rb'
-
+require './lib/memeapi'
 
 RSpec.describe MemeApi do
   
