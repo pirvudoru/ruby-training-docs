@@ -26,6 +26,38 @@ RSpec.describe AuthenticationClient do
     end
   end
 
+  describe '.login_user' do
+    subject(:login_user) { authentication.login_user(username, password) }
+
+    context 'logging in a user' do
+      let(:username) { 'mr_bean' }
+      let(:password) { 'test123' }
+
+      it 'returns an object containing a user token' do
+        @result_json = JSON.parse(login_user)
+        expect(@result_json['user']['token'].length).to be >= 1
+      end
+    end
+
+    context 'giving unknown user' do
+      let(:username) { 'cat' }
+      let(:password) { 'test123' }
+
+      it 'returns an IncorrectUserCredentialsError' do
+        expect { login_user }.to raise_error(IncorrectUserCredentialsError)
+      end
+    end
+
+    context 'giving incorrect password' do
+      let(:username) { 'mr_bean' }
+      let(:password) { 'testcat' }
+
+      it 'returns an IncorrectUserCredentialsError' do
+        expect { login_user }.to raise_error(IncorrectUserCredentialsError)
+      end
+    end
+  end
+
   describe '.delete_user' do
     subject(:delete_user) { authentication.delete_user(username) }
 
@@ -37,4 +69,6 @@ RSpec.describe AuthenticationClient do
       end
     end
   end
+
+
 end

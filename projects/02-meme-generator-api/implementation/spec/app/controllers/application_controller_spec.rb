@@ -70,22 +70,24 @@ describe 'GET /meme/:file_name' do
 end
 
 describe 'POST /signup' do
-  let(:request_body) {
-    {
-      user: {
-        'username': 'mr_bean',
-        'password': 'test123'
+  context 'creating a user record' do
+    let(:request_body) {
+      {
+        user: {
+          'username': 'mr_bean',
+          'password': 'test123'
+        }
       }
     }
-  }
 
-  it 'creates a user record' do
-    post '/signup', request_body.to_json, { 'CONTENT_TYPE' => 'application/json' }
+    it 'returns a user token' do
+      post '/signup', request_body.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
-    expect(last_response.status).to eq(201)
+      expect(last_response.status).to eq(201)
 
-    @body_json = JSON.parse(last_response.body)
-    expect(@body_json['user']['token'].length).to be >= 1
+      @body_json = JSON.parse(last_response.body)
+      expect(@body_json['user']['token'].length).to be >= 1
+    end
   end
 
   context 'giving invalid request body' do
@@ -159,6 +161,76 @@ describe 'POST /signup' do
       post '/signup', request_body.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to eq(409)
+    end
+  end
+
+  after(:all) do
+    AuthenticationClient.delete_user('mr_bean')
+  end
+end
+
+describe 'POST /login' do
+  before(:all) do
+    AuthenticationClient.create_user('mr_bean', 'test123')
+  end
+
+  context 'logging in a user' do
+    let(:request_body) {
+      {
+        user: {
+          'username': 'mr_bean',
+          'password': 'test123'
+        }
+      }
+    }
+
+    it 'returns a user token' do
+      post '/login', request_body.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to eq(200)
+
+      @body_json = JSON.parse(last_response.body)
+      expect(@body_json['user']['token'].length).to be >= 1
+    end
+  end
+
+  context 'giving unknown user' do
+    let(:request_body) {
+      {
+        user: {
+          'username': 'cat',
+          'password': 'test123'
+        }
+      }
+    }
+
+    it 'returns 400 error code with Incorrect user credentials message' do
+      post '/login', request_body.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to eq(400)
+
+      @body_json = JSON.parse(last_response.body)
+      expect(@body_json['errors'][0]['message']).to eq('Incorrect user credentials')
+    end
+  end
+
+  context 'giving wrong password' do
+    let(:request_body) {
+      {
+        user: {
+          'username': 'mr_bean',
+          'password': 'testcat'
+        }
+      }
+    }
+
+    it 'returns 400 error code with Incorrect user credentials message' do
+      post '/login', request_body.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to eq(400)
+
+      @body_json = JSON.parse(last_response.body)
+      expect(@body_json['errors'][0]['message']).to eq('Incorrect user credentials')
     end
   end
 

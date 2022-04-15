@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require './app/errors/user_already_exists_error'
+require './app/errors/incorrect_user_credentials_error'
 require 'sqlite3'
 require 'securerandom'
 
@@ -35,6 +36,13 @@ class DBClient
     @db.close
   end
 
+  def login_user(username, password)
+    raise IncorrectUserCredentialsError.new unless validate_password(username, password)
+    token = generate_token
+    add_token(username, token)
+    token
+  end
+
   private
 
   def add_user(username, password)
@@ -50,6 +58,16 @@ class DBClient
     @db.execute 'INSERT INTO tokens (token, username) VALUES (?, ?)',
                 token.to_s, username.to_s
   ensure
+    @db.close
+  end
+
+  def validate_password(username, password)
+    @db = SQLite3::Database.open 'USERS.db'
+    results = @db.query 'SELECT password FROM users WHERE username=?', username.to_s
+    first_result = results.next
+    first_result[0].eql? password if first_result
+  ensure
+    results.close
     @db.close
   end
 

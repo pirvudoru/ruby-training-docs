@@ -16,5 +16,13 @@ class AuthenticationClient
       @db_client = DBClient.new
       @db_client.delete_user(username)
     end
+
+    def login_user(username, password)
+      @db_client = DBClient.new
+      token = @db_client.login_user(username, password)
+
+      result = { "user": { "token": token.to_s } }
+      result.to_json
+    end
   end
 end
