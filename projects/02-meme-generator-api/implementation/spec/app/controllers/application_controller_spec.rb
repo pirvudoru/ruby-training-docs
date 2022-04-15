@@ -15,7 +15,8 @@ end
 
 describe 'POST /memes' do
   before(:all) do
-    @token = AuthenticationClient.create_user('mr_bean', 'test123')
+    result = AuthenticationClient.create_user('mr_bean', 'test123')
+    @token = JSON.parse(result)['user']['token']
   end
 
   context 'giving correct parameteres' do

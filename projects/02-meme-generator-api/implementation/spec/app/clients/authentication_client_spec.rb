@@ -58,6 +58,28 @@ RSpec.describe AuthenticationClient do
     end
   end
 
+  describe '.validate_user' do
+    subject(:validate_user) { authentication.validate_user(token) }
+
+    let(:username) { 'mr_bean' }
+    let(:password) { 'test123' }
+
+    context 'giving an existent token' do
+      let(:token) { JSON.parse(authentication.login_user(username, password))['user']['token'] }
+
+      it 'returns a true value' do
+        expect(validate_user).to be_truthy
+      end
+    end
+
+    context 'giving an invalid token' do
+      let(:token) { '9411a3b57f420dc9c09a25bd78ae2851' }
+      it 'returns a false value' do
+        expect(validate_user).to be_falsey
+      end
+    end
+  end
+
   describe '.delete_user' do
     subject(:delete_user) { authentication.delete_user(username) }
 

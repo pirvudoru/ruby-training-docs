@@ -45,6 +45,15 @@ class DBClient
     token
   end
 
+  def validate_user(token)
+    @db = SQLite3::Database.open 'USERS.db'
+    results = @db.query 'SELECT * FROM tokens WHERE token=?', token
+    results.next
+  ensure
+    results.close
+    @db.close
+  end
+
   private
 
   def add_user(username, password)

@@ -24,5 +24,10 @@ class AuthenticationClient
       result = { "user": { "token": token.to_s } }
       result.to_json
     end
+
+    def validate_user(token)
+      @db_client = DBClient.new
+      @db_client.validate_user(token)
+    end
   end
 end

@@ -19,6 +19,10 @@ class ApplicationController < Sinatra::Base
   end
 
   post '/memes' do
+    token = request.env['HTTP_AUTHORIZATION'].split[1]
+
+    return status 401 unless AuthenticationClient.validate_user(token)
+
     @meme = Meme.new
     @meme.image_url = @request_body_json['meme']['image_url']
     @meme.text = @request_body_json['meme']['text']
