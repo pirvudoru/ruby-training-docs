@@ -4,6 +4,7 @@ require './app/errors/user_already_exists_error'
 require './app/errors/incorrect_user_credentials_error'
 require 'sqlite3'
 require 'securerandom'
+require 'bcrypt'
 
 class DBClient
   def self.create
@@ -38,6 +39,7 @@ class DBClient
 
   def login_user(username, password)
     raise IncorrectUserCredentialsError.new unless validate_password(username, password)
+
     token = generate_token
     add_token(username, token)
     token
@@ -48,7 +50,7 @@ class DBClient
   def add_user(username, password)
     @db = SQLite3::Database.open 'USERS.db'
     @db.execute 'INSERT INTO users (username, password) VALUES (?, ?)',
-                username.to_s, password.to_s
+                username, encrypt_password(password)
   ensure
     @db.close
   end
@@ -56,7 +58,7 @@ class DBClient
   def add_token(username, token)
     @db = SQLite3::Database.open 'USERS.db'
     @db.execute 'INSERT INTO tokens (token, username) VALUES (?, ?)',
-                token.to_s, username.to_s
+                token, username
   ensure
     @db.close
   end
@@ -65,10 +67,19 @@ class DBClient
     @db = SQLite3::Database.open 'USERS.db'
     results = @db.query 'SELECT password FROM users WHERE username=?', username.to_s
     first_result = results.next
-    first_result[0].eql? password if first_result
+
+    compare_passwords(first_result[0], password) if first_result
   ensure
     results.close
     @db.close
+  end
+
+  def compare_passwords(encrypted_password, plain_password)
+    BCrypt::Password.new(encrypted_password) == plain_password
+  end
+
+  def encrypt_password(password)
+    BCrypt::Password.create(password).to_s
   end
 
   def generate_token
