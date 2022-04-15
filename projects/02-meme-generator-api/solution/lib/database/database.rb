@@ -25,9 +25,8 @@ class Database
     @db.execute "
       CREATE TABLE IF NOT EXISTS UsersTokens (
         id INTEGER PRIMARY KEY,
-        userId INTEGER,
-        token TEXT,
-        FOREIGN KEY(userId) REFERENCES Users(id)
+        username TEXT,
+        token TEXT
       )
     "
     @db.results_as_hash = true
@@ -52,15 +51,23 @@ class Database
     "
     true
     rescue SQLite3::ConstraintException
-      raise Database::UserExistsError
+      raise Database::UserExistsError.new('Username already exists')
   end
 
-  def delete_user
+  def insert_token(username, token)
+    @db.execute "
+      INSERT INTO UsersTokens (username, token)
+      VALUES (
+        '#{username}',
+        '#{token}'
+      );
+    "
+  end
+
+  def delete_users
     @db.execute "
     DELETE FROM Users
     "
-    rescue StandardError => e
-      pp e
   end
 
   def select_all

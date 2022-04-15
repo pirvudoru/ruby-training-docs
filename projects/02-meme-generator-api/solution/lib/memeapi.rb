@@ -3,6 +3,11 @@ require './lib/download'
 require 'pry'
 require './lib/validators/meme_validator'
 require './lib/image_creator'
+require './lib/database/database'
+require './lib/password_crypter'
+require './lib/validators/account_validator'
+require './lib/token_generator'
+require './lib/password_crypter'
 
 class MemeApi < Sinatra::Application
 
@@ -28,6 +33,27 @@ class MemeApi < Sinatra::Application
     path = Pathname(__dir__).join("../images/#{params[:file]}")
     send_file(path)
   end
+
+  post '/signup' do
+    json_body = JSON.parse(request.body.read)
+    username, password = AccountValidator.validate_account(json_body)
+    database.insert_user(username,PasswordCrypter.encrypt(password))
+    token = TokenGenerator.generate
+    database.insert_token(username, token)
+    
+    [201, {"user": {"token": token} }.to_json]
+  rescue AccountValidator::RequestBodyError
+    [400, {"errors": ["message": "Bad request body"]}.to_json]
+  rescue AccountValidator::EmptyParameterError => e
+    [400, {"errors": ["message": e.message]}.to_json]
+  rescue Database::UserExistsError => e
+    [400, {"errors": ["message": e.message]}.to_json]
+  end
   
+  private
+
+  def database
+    Database.create
+  end
   
 end

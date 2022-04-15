@@ -11,9 +11,5 @@ class MemeValidator
       end
       true
     end
-
-    def validate_auth(body)
-      #todo
-    end
   end
 end
