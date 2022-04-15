@@ -69,8 +69,8 @@ class ApplicationController < Sinatra::Base
     @password = @request_body_json['user']['password']
 
     begin
-      @user_token = AuthenticationClient.login_user(@user_token, @password)
-    rescue IncorrectUserCredentials
+      @user_token = AuthenticationClient.login_user(@username, @password)
+    rescue IncorrectUserCredentialsError
       @incorrect_user_credentials_error = { 'errors': [{ 'message': 'Incorrect user credentials' }] }
       status 400
       body @incorrect_user_credentials_error.to_json
