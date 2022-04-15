@@ -19,7 +19,11 @@ class ApplicationController < Sinatra::Base
   end
 
   post '/memes' do
-    token = request.env['HTTP_AUTHORIZATION'].split[1]
+    begin
+      token = request.env['HTTP_AUTHORIZATION'].split[1]
+    rescue NoMethodError
+      status 401
+    end
 
     return status 401 unless AuthenticationClient.validate_user(token)
 
