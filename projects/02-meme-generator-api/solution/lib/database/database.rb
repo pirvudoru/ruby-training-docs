@@ -1,4 +1,5 @@
 require 'sqlite3'
+require 'pry'
 
 class Database
   PATH = './database.db'
@@ -6,7 +7,9 @@ class Database
   class UserExistsError < StandardError
   end
   
-  
+  class NonExistentUserError < StandardError
+  end
+
   class << self
     def create()
       @instance ||= new
@@ -38,7 +41,17 @@ class Database
       FROM Users
       WHERE username = '#{username}';
     "
-    pp result
+    raise Database::NonExistentUserError.new('This username does not exist.') unless result.first
+    result.first
+  end
+
+  def get_tokens(username)
+    result = @db.execute "
+      SELECT * 
+      FROM UsersTokens
+      WHERE username = '#{username}';
+    "
+    result.first
   end
 
   def insert_user(username, password)
@@ -67,6 +80,9 @@ class Database
   def delete_users
     @db.execute "
     DELETE FROM Users
+    "
+    @db.execute "
+    DELETE FROM UsersTokens
     "
   end
 

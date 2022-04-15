@@ -50,6 +50,27 @@ class MemeApi < Sinatra::Application
     [400, {"errors": ["message": e.message]}.to_json]
   end
   
+
+  post '/login' do
+    json_body = JSON.parse(request.body.read)
+    username, password = AccountValidator.validate_account(json_body)
+    hashed = database.get_user(username)['password']
+    PasswordCrypter.equal?(hashed,password)
+    token = database.get_tokens(username)['token']
+   
+
+    [201, {"user": {"token": token } }.to_json]
+  rescue AccountValidator::RequestBodyError
+    [400, {"errors": ["message": "Bad request body"]}.to_json]
+  rescue AccountValidator::EmptyParameterError => e
+    [400, {"errors": ["message": e.message]}.to_json]
+  rescue PasswordCrypter::WrongPasswordError => e
+    [400, {"errors": ["message": e.message]}.to_json]
+  rescue Database::NonExistentUserError => e
+    [400, {"errors": ["message": e.message]}.to_json]
+    
+  end
+
   private
 
   def database

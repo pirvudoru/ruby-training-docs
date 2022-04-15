@@ -13,7 +13,7 @@ class AccountValidator
       end
       raise AccountValidator::EmptyParameterError.new('Username is blank') if body['user']['username'].empty?
       raise AccountValidator::EmptyParameterError.new('Password is blank') if body['user']['password'].empty?
-      [body['user']['username'],body['user']['password']]
+      [body['user']['username'], body['user']['password']]
     end
   end
 end

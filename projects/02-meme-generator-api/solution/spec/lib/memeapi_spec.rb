@@ -121,6 +121,53 @@ RSpec.describe MemeApi do
       expect(JSON.parse(last_response.body)["errors"][0]["message"]).to eq "Password is blank"
     end
   end
+  end
+
+  describe "POST /login" do  
+    context 'request with good credentials' do
+      it "returns status 201 and the a token" do
+        body = {
+          "user": {
+            "username": "mr_bean",
+            "password": "test123"
+          }
+        }
+        post '/login', body.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+        expect(last_response.status).to eq 201
+      end
+
+      context 'request with wrong password' do
+        it 'returns status 400 and message "Wrong password, please try again."' do
+          body = {
+            "user": {
+              "username": "mr_bean",
+              "password": "testw2dsadw131"
+            }
+          }
+          post '/login', body.to_json, { 'CONTENT_TYPE' => 'application/json' }
+  
+          expect(last_response.status).to eq 400
+          expect(JSON.parse(last_response.body)["errors"][0]["message"]).to eq 'Wrong password, please try again.'
+        end
+      end
+
+      context 'request with non existent username' do
+        it 'returns status 400 and message "This username does not exist."' do
+          body = {
+            "user": {
+              "username": "mr_dwdsadwbean",
+              "password": "desw"
+            }
+          }
+          post '/login', body.to_json, { 'CONTENT_TYPE' => 'application/json' }
+  
+          expect(last_response.status).to eq 400
+          expect(JSON.parse(last_response.body)["errors"][0]["message"]).to eq 'This username does not exist.'
+
+        end
+      end
+  end
 end
 
   describe "GET" do          
@@ -129,6 +176,8 @@ end
         expect(last_response.content_type).to eq 'image/jpeg'
       end
   end
+
+
 
   after(:suite) do
     Database.create.delete_users
