@@ -57,9 +57,8 @@ class MemeApi < Sinatra::Application
     hashed = database.get_user(username)['password']
     PasswordCrypter.equal?(hashed,password)
     token = database.get_tokens(username)['token']
-   
 
-    [201, {"user": {"token": token } }.to_json]
+    [200, {"user": {"token": token } }.to_json]
   rescue AccountValidator::RequestBodyError
     [400, {"errors": ["message": "Bad request body"]}.to_json]
   rescue AccountValidator::EmptyParameterError => e

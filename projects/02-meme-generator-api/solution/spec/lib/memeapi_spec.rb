@@ -127,7 +127,7 @@ RSpec.describe MemeApi do
 
   describe "POST /login" do  
     context 'request with good credentials' do
-      it "returns status 201 and the a token" do
+      it "returns status 200 and the a token" do
         body = {
           "user": {
             "username": "mr_bean",
@@ -136,7 +136,7 @@ RSpec.describe MemeApi do
         }
         post '/login', body.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
-        expect(last_response.status).to eq 201
+        expect(last_response.status).to eq 200
       end
 
       context 'request with wrong password' do
