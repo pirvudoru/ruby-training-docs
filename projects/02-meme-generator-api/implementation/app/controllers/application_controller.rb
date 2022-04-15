@@ -2,6 +2,7 @@
 
 require 'sinatra/base'
 require './app/models/meme'
+require './app/clients/authentication_client'
 
 class ApplicationController < Sinatra::Base
   module ContentType
@@ -33,5 +34,33 @@ class ApplicationController < Sinatra::Base
 
   get '/meme/:file_name' do
     send_file(Meme.file_path(params[:file_name]))
+  end
+
+  post '/signup' do
+    begin
+      @username = @request_body_json['user']['username']
+      @password = @request_body_json['user']['password']
+    rescue
+      status 400
+    else
+      if @username.empty?
+        @blank_username_error = { 'errors': [{ 'message': 'Username is blank' }] }
+        status 400
+        @blank_username_error.to_json
+      elsif @password.empty?
+        @blank_password_error = { 'errors': [{ 'message': 'Password is blank' }] }
+        status 400
+        body @blank_password_error.to_json
+      else
+        begin
+          @user_token = AuthenticationClient.create_user(@username, @password)
+        rescue UserAlreadyExistsError
+          status 409
+        else
+          status 201
+          body @user_token
+        end
+      end
+    end
   end
 end

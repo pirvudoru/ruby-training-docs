@@ -35,7 +35,7 @@ describe 'POST /memes' do
       }
     }
 
-    it 'redirect to created image' do
+    it 'redirects to created image' do
       post '/memes', request_body_missing_text.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to eq(303)
@@ -80,10 +80,12 @@ describe 'POST /signup' do
   }
 
   it 'creates a user record' do
-    post '/signup', request_body, { 'CONTENT_TYPE' => 'application/json' }
+    post '/signup', request_body.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
     expect(last_response.status).to eq(201)
-    expect(last_response.body).to include('user', 'token')
+
+    @body_json = JSON.parse(last_response.body)
+    expect(@body_json['user']['token'].length).to be >= 1
   end
 
   context 'giving invalid request body' do
@@ -97,7 +99,7 @@ describe 'POST /signup' do
     }
 
     it 'returns error code 400' do
-      post '/signup', request_body, { 'CONTENT_TYPE' => 'application/json' }
+      post '/signup', request_body.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to eq(400)
     end
@@ -114,10 +116,12 @@ describe 'POST /signup' do
     }
 
     it 'returns 400 error code with Username is blank message' do
-      post '/signup', request_body, { 'CONTENT_TYPE' => 'application/json' }
+      post '/signup', request_body.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to eq(400)
-      expect(last_response.body).to include('{ "errors": [{"message": "Username is blank"}] }')
+
+      @body_json = JSON.parse(last_response.body)
+      expect(@body_json['errors'][0]['message']).to eq('Username is blank')
     end
   end
 
@@ -132,10 +136,12 @@ describe 'POST /signup' do
     }
 
     it 'returns 400 error code with Password is blank message' do
-      post '/signup', request_body, { 'CONTENT_TYPE' => 'application/json' }
+      post '/signup', request_body.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to eq(400)
-      expect(last_response.body).to include('{ "errors": [{"message": "Password is blank"}] }')
+
+      @body_json = JSON.parse(last_response.body)
+      expect(@body_json['errors'][0]['message']).to eq('Password is blank')
     end
   end
 
@@ -150,13 +156,13 @@ describe 'POST /signup' do
     }
 
     it 'returns 409 error code' do
-      post '/signup', request_body, { 'CONTENT_TYPE' => 'application/json' }
+      post '/signup', request_body.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to eq(409)
     end
   end
 
   after(:all) do
-    # delete here the entrance created by the test from the database
+    AuthenticationClient.delete_user('mr_bean')
   end
 end
