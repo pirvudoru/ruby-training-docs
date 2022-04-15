@@ -14,6 +14,10 @@ describe 'GET /' do
 end
 
 describe 'POST /memes' do
+  before(:all) do
+    @token = AuthenticationClient.create_user('mr_bean', 'test123')
+  end
+
   context 'giving correct parameteres' do
     let(:request_body) {
       {
@@ -23,9 +27,15 @@ describe 'POST /memes' do
         }
       }
     }
+    let(:request_header) {
+      {
+        'CONTENT_TYPE' => 'application/json',
+        'HTTP_AUTHORIZATION' => "Bearer #{@token}"
+      }
+    }
 
     it 'redirects to created image' do
-      post '/memes', request_body.to_json, { 'CONTENT_TYPE' => 'application/json' }
+      post '/memes', request_body.to_json, request_header
 
       expect(last_response.status).to eq(303)
       expect(last_response.location).to eq('http://example.org/meme/image1.jpg')
@@ -40,9 +50,15 @@ describe 'POST /memes' do
         }
       }
     }
+    let(:request_header) {
+      {
+        'CONTENT_TYPE' => 'application/json',
+        'HTTP_AUTHORIZATION' => "Bearer #{@token}"
+      }
+    }
 
     it 'redirects to created image' do
-      post '/memes', request_body.to_json, { 'CONTENT_TYPE' => 'application/json' }
+      post '/memes', request_body.to_json, request_header
 
       expect(last_response.status).to eq(303)
       expect(last_response.location).to eq('http://example.org/meme/image1.jpg')
@@ -57,12 +73,64 @@ describe 'POST /memes' do
         }
       }
     }
+    let(:request_header) {
+      {
+        'CONTENT_TYPE' => 'application/json',
+        'HTTP_AUTHORIZATION' => "Bearer #{@token}"
+      }
+    }
 
     it 'returns error status 400' do
-      post '/memes', request_body.to_json, { 'CONTENT_TYPE' => 'application/json' }
+      post '/memes', request_body.to_json, request_header
 
       expect(last_response.status).to eq(400)
     end
+  end
+
+  describe 'authorization failed' do
+    context 'giving no authorization header' do
+      let(:request_body) {
+        {
+          meme: {
+            'image_url': 'https://images.unsplash.com/photo-1647549831144-09d4c521c1f1',
+            'text': 'Start the way by organising your playground'
+          }
+        }
+      }
+
+      it 'returns 401 error code' do
+        post '/memes', request_body.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+        expect(last_response.status).to eq(401)
+      end
+    end
+
+    context 'giving invalid token' do
+      let(:request_body) {
+        {
+          meme: {
+            'image_url': 'https://images.unsplash.com/photo-1647549831144-09d4c521c1f1',
+            'text': 'Start the way by organising your playground'
+          }
+        }
+      }
+      let(:request_header) {
+        {
+          'CONTENT_TYPE' => 'application/json',
+          'HTTP_AUTHORIZATION' => 'Bearer 9411a3b57f420dc9c09a25bd78ae2851'
+        }
+      }
+
+      it 'returns 401 error code' do
+        post '/memes', request_body.to_json, request_header
+
+        expect(last_response.status).to eq(401)
+      end
+    end
+  end
+
+  after(:all) do
+    AuthenticationClient.delete_user('mr_bean')
   end
 end
 
