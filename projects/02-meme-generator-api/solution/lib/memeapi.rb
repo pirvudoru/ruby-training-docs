@@ -47,7 +47,7 @@ class MemeApi < Sinatra::Application
   rescue AccountValidator::EmptyParameterError => e
     [400, {"errors": ["message": e.message]}.to_json]
   rescue Database::UserExistsError => e
-    [400, {"errors": ["message": e.message]}.to_json]
+    [409, {"errors": ["message": e.message]}.to_json]
   end
   
 

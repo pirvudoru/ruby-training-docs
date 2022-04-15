@@ -69,18 +69,6 @@ RSpec.describe MemeApi do
 
         expect(last_response.status).to eq 201
       end
-
-      it "returns status 201" do
-        body = {
-          "user": {
-            "username": "mr_bean",
-            "password": "test123"
-          }
-        }
-        post '/signup', body.to_json, { 'CONTENT_TYPE' => 'application/json' }
-
-        expect(last_response.status).to eq 400
-      end
     end
 
   context 'with bad body request' do
@@ -107,20 +95,34 @@ RSpec.describe MemeApi do
     end
   end
 
-  context 'with empty password request' do
-    it 'returns status 400 and message is "Password is blank"' do
-      body = {
-        "user": {
-          "username": "mr_bean",
-          "password": ""
+    context 'with empty password request' do
+      it 'returns status 400 and message is "Password is blank"' do
+        body = {
+          "user": {
+            "username": "mr_bean",
+            "password": ""
+          }
         }
-      }
-      post '/signup', body.to_json, { 'CONTENT_TYPE' => 'application/json' }
+        post '/signup', body.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
-      expect(last_response.status).to eq 400
-      expect(JSON.parse(last_response.body)["errors"][0]["message"]).to eq "Password is blank"
+        expect(last_response.status).to eq 400
+        expect(JSON.parse(last_response.body)["errors"][0]["message"]).to eq "Password is blank"
+      end
     end
-  end
+
+    context 'request with username already existing password' do
+      it 'returns status 409' do
+        body = {
+          "user": {
+            "username": "mr_bean",
+            "password": "test123"
+          }
+        }
+        post '/signup', body.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+        expect(last_response.status).to eq 409
+      end
+    end
   end
 
   describe "POST /login" do  
