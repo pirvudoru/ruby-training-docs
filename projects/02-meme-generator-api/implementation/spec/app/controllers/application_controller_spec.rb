@@ -36,10 +36,37 @@ describe 'POST /memes' do
     }
 
     it 'redirects to created image' do
-      post '/memes', request_body.to_json, request_header
+      VCR.use_cassette("unsplash") do
+        post '/memes', request_body.to_json, request_header
+      end
 
       expect(last_response.status).to eq(303)
       expect(last_response.location).to eq('http://example.org/meme/image1.jpg')
+    end
+  end
+
+  context 'image not found' do
+    let(:request_body) {
+      {
+        meme: {
+          'image_url': 'https://images.unsplash.com/photo-1647549831144-09d4c521c1f1',
+          'text': 'Start the way by organising your playground'
+        }
+      }
+    }
+    let(:request_header) {
+      {
+        'CONTENT_TYPE' => 'application/json',
+        'HTTP_AUTHORIZATION' => "Bearer #{@token}"
+      }
+    }
+
+    it 'redirects returns 400' do
+      VCR.use_cassette("unsplash-not_found") do
+        post '/memes', request_body.to_json, request_header
+      end
+
+      expect(last_response.status).to eq(400)
     end
   end
 
@@ -59,7 +86,9 @@ describe 'POST /memes' do
     }
 
     it 'redirects to created image' do
-      post '/memes', request_body.to_json, request_header
+      VCR.use_cassette("unsplash") do
+        post '/memes', request_body.to_json, request_header
+      end
 
       expect(last_response.status).to eq(303)
       expect(last_response.location).to eq('http://example.org/meme/image1.jpg')

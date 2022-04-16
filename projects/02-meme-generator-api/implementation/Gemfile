@@ -13,3 +13,6 @@ gem 'securerandom'
 gem 'sinatra'
 gem 'sqlite3'
 gem 'thin'
+
+gem "webmock"
+gem "vcr"

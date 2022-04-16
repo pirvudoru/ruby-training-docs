@@ -20,25 +20,18 @@ class ApplicationController < Sinatra::Base
   end
 
   post '/memes' do
-    begin #extract auth check in separate method
-      token = request.env['HTTP_AUTHORIZATION'].split[1]
-    rescue NoMethodError
-      status 401
-    end
-
+    token = (request.env['HTTP_AUTHORIZATION'] || '').split[1]
     return status 401 unless AuthenticationClient.authorized?(token)
 
-    @meme = Meme.new
-    @meme.image_url = @request_body_json['meme']['image_url']
-    @meme.text = @request_body_json['meme']['text']
+    meme = Meme.new
+    meme.image_url = @request_body_json['meme']['image_url']
+    meme.text = @request_body_json['meme']['text']
+    meme.create
 
-    begin
-      @meme.create
-    rescue StandardError # TODO: Catch a specific error. Move download code that raises private method call to a separate classs, and raise specific error there
-      status 400
-    else
-      redirect "/meme/#{@meme.file_name}", 303
-    end
+    redirect "/meme/#{meme.file_name}", 303
+  rescue StandardError => e # TODO: Catch a specific error. Move download code that raises private method call to a separate classs, and raise specific error there
+    pp e
+    status 400
   end
 
   get '/meme/:file_name' do
