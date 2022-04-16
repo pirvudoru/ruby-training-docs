@@ -110,11 +110,23 @@ RSpec.describe MemeApi do
       end
     end
 
-    context 'request with username already existing password' do
+    context 'request with existing username' do
+      let(:username) { "mr_bean" }
+
+      before do
+        body = {
+          "user": {
+            "username": username,
+            "password": "asdf123"
+          }
+        }
+        post '/signup', body.to_json, { 'CONTENT_TYPE' => 'application/json' }
+      end
+
       it 'returns status 409' do
         body = {
           "user": {
-            "username": "mr_bean",
+            "username": username,
             "password": "test123"
           }
         }
@@ -127,11 +139,24 @@ RSpec.describe MemeApi do
 
   describe "POST /login" do  
     context 'request with good credentials' do
+      let(:username) { 'mr_bean' }
+      let(:password) { 'test123' }
+
+      before do
+        body = {
+          "user": {
+            "username": username,
+            "password": password
+          }
+        }
+        post '/signup', body.to_json, { 'CONTENT_TYPE' => 'application/json' }
+      end
+
       it "returns status 200 and the a token" do
         body = {
           "user": {
-            "username": "mr_bean",
-            "password": "test123"
+            "username": username,
+            "password": password
           }
         }
         post '/login', body.to_json, { 'CONTENT_TYPE' => 'application/json' }
