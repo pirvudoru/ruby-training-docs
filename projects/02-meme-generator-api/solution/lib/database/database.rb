@@ -54,12 +54,12 @@ class Database
     result.first
   end
 
-  def insert_user(username, password)
+  def insert_user(user)
     @db.execute "
     INSERT INTO Users (username, password)
     VALUES (
-      '#{username}',
-      '#{password}'
+      '#{user.username}',
+      '#{user.password}'
     );
     "
     true
@@ -67,16 +67,15 @@ class Database
       raise Database::UserExistsError.new('Username already exists')
   end
 
-  def insert_token(username, token)
+  def insert_token(user_token)
     @db.execute "
       INSERT INTO UsersTokens (username, token)
       VALUES (
-        '#{username}',
-        '#{token}'
+        '#{user_token.user.username}',
+        '#{user_token.value}'
       );
     "
   end
-
   def truncate
     @db.execute "
     DELETE FROM Users

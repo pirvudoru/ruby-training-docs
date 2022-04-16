@@ -35,17 +35,30 @@ class MemeApi < Sinatra::Application
   end
 
   post '/signup' do
-    json_body = JSON.parse(request.body.read)
-    username, password = AccountValidator.validate_account(json_body)
-    database.insert_user(username,PasswordCrypter.encrypt(password))
-    token = TokenGenerator.generate
-    database.insert_token(username, token)
+    params = JSON.parse(request.body.read)
+    AccountValidator.validate_account(params)
+    user = create_user(params)
+    database.insert_user(user)
+    token = generate_token(user)
+    database.insert_token(token)
     
     [201, {"user": {"token": token} }.to_json]
   rescue AccountValidator::ValidationError
     [400, {"errors": ["message": e.message]}.to_json]
   rescue Database::UserExistsError => e
     [409, {"errors": ["message": e.message]}.to_json]
+  end
+
+  def create_user(params)
+    username = params['user']['username']
+    password = params['user']['password']
+    hashed_password = PasswordCrypter.encrypt(password)
+
+    User.new(username: username, password: hashed_password)
+  end
+
+  def generate_token(user)
+    UserToken.new(user: user, value: TokenGenerator.generate)
   end
   
 
