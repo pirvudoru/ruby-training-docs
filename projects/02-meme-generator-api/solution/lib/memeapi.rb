@@ -42,9 +42,7 @@ class MemeApi < Sinatra::Application
     database.insert_token(username, token)
     
     [201, {"user": {"token": token} }.to_json]
-  rescue AccountValidator::RequestBodyError
-    [400, {"errors": ["message": "Bad request body"]}.to_json]
-  rescue AccountValidator::EmptyParameterError => e
+  rescue AccountValidator::ValidationError
     [400, {"errors": ["message": e.message]}.to_json]
   rescue Database::UserExistsError => e
     [409, {"errors": ["message": e.message]}.to_json]
@@ -59,9 +57,7 @@ class MemeApi < Sinatra::Application
     token = database.get_tokens(username)['token']
 
     [200, {"user": {"token": token } }.to_json]
-  rescue AccountValidator::RequestBodyError
-    [400, {"errors": ["message": "Bad request body"]}.to_json]
-  rescue AccountValidator::EmptyParameterError => e
+  rescue AccountValidator::ValidationError
     [400, {"errors": ["message": e.message]}.to_json]
   rescue PasswordCrypter::WrongPasswordError => e
     [400, {"errors": ["message": e.message]}.to_json]
