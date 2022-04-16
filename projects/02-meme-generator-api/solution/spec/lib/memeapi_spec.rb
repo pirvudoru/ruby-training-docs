@@ -197,7 +197,7 @@ RSpec.describe MemeApi do
   end
 end
 
-  describe "GET" do          
+  describe "GET /memes/:image_name" do
       it "returns an image type" do
         get "/memes/test.original.jpg"
         expect(last_response.content_type).to eq 'image/jpeg'
