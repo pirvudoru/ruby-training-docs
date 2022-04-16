@@ -1,0 +1,9 @@
+AllCops:
+  NewCops: disable
+
+Style/Documentation:
+  Enabled: false
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'

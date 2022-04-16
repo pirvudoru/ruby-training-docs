@@ -29,7 +29,9 @@ class ApplicationController < Sinatra::Base
     meme.create
 
     redirect "/meme/#{meme.file_name}", 303
-  rescue StandardError => e # TODO: Catch a specific error. Move download code that raises private method call to a separate classs, and raise specific error there
+    # TODO: Catch a specific error. Move download code that raises private method
+    # call to a separate classs, and raise specific error there
+  rescue StandardError => e
     pp e
     status 400
   end
@@ -45,7 +47,8 @@ class ApplicationController < Sinatra::Base
     status 400
   else
     if @username.empty? # TODO: Introduce a validator class
-      @blank_username_error = { 'errors': [{ 'message': 'Username is blank' }] } # TODO: Extract error serialization to avoid duplication
+      # TODO: Extract error serialization to avoid duplication
+      @blank_username_error = { 'errors': [{ 'message': 'Username is blank' }] }
       status 400
       @blank_username_error.to_json
     elsif @password.empty?
