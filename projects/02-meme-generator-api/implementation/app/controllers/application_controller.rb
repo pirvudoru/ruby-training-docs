@@ -48,11 +48,11 @@ class ApplicationController < Sinatra::Base
   else
     if @username.empty? # TODO: Introduce a validator class
       # TODO: Extract error serialization to avoid duplication
-      @blank_username_error = { 'errors': [{ 'message': 'Username is blank' }] }
+      @blank_username_error = { errors: [{ message: 'Username is blank' }] }
       status 400
       @blank_username_error.to_json
     elsif @password.empty?
-      @blank_password_error = { 'errors': [{ 'message': 'Password is blank' }] }
+      @blank_password_error = { errors: [{ message: 'Password is blank' }] }
       status 400
       body @blank_password_error.to_json
     else
@@ -74,7 +74,7 @@ class ApplicationController < Sinatra::Base
     begin
       @user_token = AuthenticationClient.login_user(@username, @password)
     rescue IncorrectUserCredentialsError
-      @incorrect_user_credentials_error = { 'errors': [{ 'message': 'Incorrect user credentials' }] }
+      @incorrect_user_credentials_error = { errors: [{ message: 'Incorrect user credentials' }] }
       status 400
       body @incorrect_user_credentials_error.to_json
     else

@@ -14,7 +14,7 @@ class AuthenticationClient
       token = generate_token
       db_client.create_token(username, token)
 
-      result = { "user": { "token": token } }
+      result = { user: { token: token } }
       result.to_json
     end
 
@@ -32,7 +32,7 @@ class AuthenticationClient
       token = generate_token
       db_client.create_token(username, token)
 
-      result = { "user": { "token": token.to_s } }
+      result = { user: { token: token.to_s } }
       result.to_json
     end
 

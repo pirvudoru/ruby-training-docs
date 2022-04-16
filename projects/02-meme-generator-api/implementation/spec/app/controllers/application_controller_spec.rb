@@ -23,8 +23,8 @@ describe 'POST /memes' do
     let(:request_body) do
       {
         meme: {
-          'image_url': 'https://images.unsplash.com/photo-1647549831144-09d4c521c1f1',
-          'text': 'Start the way by organising your playground'
+          image_url: 'https://images.unsplash.com/photo-1647549831144-09d4c521c1f1',
+          text: 'Start the way by organising your playground'
         }
       }
     end
@@ -49,8 +49,8 @@ describe 'POST /memes' do
     let(:request_body) do
       {
         meme: {
-          'image_url': 'https://images.unsplash.com/photo-1647549831144-09d4c521c1f1',
-          'text': 'Start the way by organising your playground'
+          image_url: 'https://images.unsplash.com/photo-1647549831144-09d4c521c1f1',
+          text: 'Start the way by organising your playground'
         }
       }
     end
@@ -74,7 +74,7 @@ describe 'POST /memes' do
     let(:request_body) do
       {
         meme: {
-          'image_url': 'https://images.unsplash.com/photo-1647549831144-09d4c521c1f1'
+          image_url: 'https://images.unsplash.com/photo-1647549831144-09d4c521c1f1'
         }
       }
     end
@@ -99,7 +99,7 @@ describe 'POST /memes' do
     let(:request_body) do
       {
         meme: {
-          'text': 'Start the way by organising your playground'
+          text: 'Start the way by organising your playground'
         }
       }
     end
@@ -122,8 +122,8 @@ describe 'POST /memes' do
       let(:request_body) do
         {
           meme: {
-            'image_url': 'https://images.unsplash.com/photo-1647549831144-09d4c521c1f1',
-            'text': 'Start the way by organising your playground'
+            image_url: 'https://images.unsplash.com/photo-1647549831144-09d4c521c1f1',
+            text: 'Start the way by organising your playground'
           }
         }
       end
@@ -139,8 +139,8 @@ describe 'POST /memes' do
       let(:request_body) do
         {
           meme: {
-            'image_url': 'https://images.unsplash.com/photo-1647549831144-09d4c521c1f1',
-            'text': 'Start the way by organising your playground'
+            image_url: 'https://images.unsplash.com/photo-1647549831144-09d4c521c1f1',
+            text: 'Start the way by organising your playground'
           }
         }
       end
@@ -179,8 +179,8 @@ describe 'POST /signup' do
   let(:request_body) do
     {
       user: {
-        'username': username,
-        'password': password
+        username: username,
+        password: password
       }
     }
   end
@@ -203,8 +203,8 @@ describe 'POST /signup' do
     let(:request_body) do
       {
         cat: {
-          'color': 'blue',
-          'language': 'miau'
+          color: 'blue',
+          language: 'miau'
         }
       }
     end
@@ -259,8 +259,8 @@ describe 'POST /login' do
   before(:all) do
     request_body = {
       user: {
-        'username': 'mr_bean',
-        'password': 'test123'
+        username: 'mr_bean',
+        password: 'test123'
       }
     }
 
@@ -270,8 +270,8 @@ describe 'POST /login' do
   let(:request_body) do
     {
       user: {
-        'username': username,
-        'password': password
+        username: username,
+        password: password
       }
     }
   end
