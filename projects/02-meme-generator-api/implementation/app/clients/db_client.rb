@@ -7,7 +7,7 @@ require 'securerandom'
 require 'bcrypt'
 
 class DBClient
-  def self.create
+  def self.instance
     @instance ||= new
   end
 
