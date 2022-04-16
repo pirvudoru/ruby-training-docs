@@ -14,5 +14,6 @@ gem 'sinatra'
 gem 'sqlite3'
 gem 'thin'
 
-gem "webmock"
-gem "vcr"
+gem 'rubocop'
+gem 'vcr'
+gem 'webmock'

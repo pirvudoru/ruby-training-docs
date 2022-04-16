@@ -39,29 +39,27 @@ class ApplicationController < Sinatra::Base
   end
 
   post '/signup' do
-    begin
-      @username = @request_body_json['user']['username']
-      @password = @request_body_json['user']['password']
-    rescue
+    @username = @request_body_json['user']['username']
+    @password = @request_body_json['user']['password']
+  rescue StandardError
+    status 400
+  else
+    if @username.empty? # TODO: Introduce a validator class
+      @blank_username_error = { 'errors': [{ 'message': 'Username is blank' }] } # TODO: Extract error serialization to avoid duplication
       status 400
+      @blank_username_error.to_json
+    elsif @password.empty?
+      @blank_password_error = { 'errors': [{ 'message': 'Password is blank' }] }
+      status 400
+      body @blank_password_error.to_json
     else
-     if @username.empty? # TODO: Introduce a validator class
-       @blank_username_error = { 'errors': [{ 'message': 'Username is blank' }] } # TODO: Extract error serialization to avoid duplication
-       status 400
-       @blank_username_error.to_json
-      elsif @password.empty?
-       @blank_password_error = { 'errors': [{ 'message': 'Password is blank' }] }
-       status 400
-       body @blank_password_error.to_json
+      begin
+        @user_token = AuthenticationClient.create_user(@username, @password) # TODO: Look at ServiceObject pattern
+      rescue UserAlreadyExistsError
+        status 409
       else
-        begin
-          @user_token = AuthenticationClient.create_user(@username, @password) # TODO: Look at ServiceObject pattern
-        rescue UserAlreadyExistsError
-          status 409
-        else
-          status 201
-          body @user_token
-        end
+        status 201
+        body @user_token
       end
     end
   end

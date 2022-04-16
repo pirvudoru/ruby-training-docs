@@ -20,23 +20,23 @@ describe 'POST /memes' do
   end
 
   context 'giving correct parameteres' do
-    let(:request_body) {
+    let(:request_body) do
       {
         meme: {
           'image_url': 'https://images.unsplash.com/photo-1647549831144-09d4c521c1f1',
           'text': 'Start the way by organising your playground'
         }
       }
-    }
-    let(:request_header) {
+    end
+    let(:request_header) do
       {
         'CONTENT_TYPE' => 'application/json',
         'HTTP_AUTHORIZATION' => "Bearer #{@token}"
       }
-    }
+    end
 
     it 'redirects to created image' do
-      VCR.use_cassette("unsplash") do
+      VCR.use_cassette('unsplash') do
         post '/memes', request_body.to_json, request_header
       end
 
@@ -46,23 +46,23 @@ describe 'POST /memes' do
   end
 
   context 'image not found' do
-    let(:request_body) {
+    let(:request_body) do
       {
         meme: {
           'image_url': 'https://images.unsplash.com/photo-1647549831144-09d4c521c1f1',
           'text': 'Start the way by organising your playground'
         }
       }
-    }
-    let(:request_header) {
+    end
+    let(:request_header) do
       {
         'CONTENT_TYPE' => 'application/json',
         'HTTP_AUTHORIZATION' => "Bearer #{@token}"
       }
-    }
+    end
 
     it 'redirects returns 400' do
-      VCR.use_cassette("unsplash-not_found") do
+      VCR.use_cassette('unsplash-not_found') do
         post '/memes', request_body.to_json, request_header
       end
 
@@ -71,22 +71,22 @@ describe 'POST /memes' do
   end
 
   context 'giving no text' do
-    let(:request_body) {
+    let(:request_body) do
       {
         meme: {
           'image_url': 'https://images.unsplash.com/photo-1647549831144-09d4c521c1f1'
         }
       }
-    }
-    let(:request_header) {
+    end
+    let(:request_header) do
       {
         'CONTENT_TYPE' => 'application/json',
         'HTTP_AUTHORIZATION' => "Bearer #{@token}"
       }
-    }
+    end
 
     it 'redirects to created image' do
-      VCR.use_cassette("unsplash") do
+      VCR.use_cassette('unsplash') do
         post '/memes', request_body.to_json, request_header
       end
 
@@ -96,19 +96,19 @@ describe 'POST /memes' do
   end
 
   context 'giving no image URL' do
-    let(:request_body) {
+    let(:request_body) do
       {
         meme: {
           'text': 'Start the way by organising your playground'
         }
       }
-    }
-    let(:request_header) {
+    end
+    let(:request_header) do
       {
         'CONTENT_TYPE' => 'application/json',
         'HTTP_AUTHORIZATION' => "Bearer #{@token}"
       }
-    }
+    end
 
     it 'returns error status 400' do
       post '/memes', request_body.to_json, request_header
@@ -119,14 +119,14 @@ describe 'POST /memes' do
 
   describe 'authorization failed' do
     context 'giving no authorization header' do
-      let(:request_body) {
+      let(:request_body) do
         {
           meme: {
             'image_url': 'https://images.unsplash.com/photo-1647549831144-09d4c521c1f1',
             'text': 'Start the way by organising your playground'
           }
         }
-      }
+      end
 
       it 'returns 401 error code' do
         post '/memes', request_body.to_json, { 'CONTENT_TYPE' => 'application/json' }
@@ -136,20 +136,20 @@ describe 'POST /memes' do
     end
 
     context 'giving invalid token' do
-      let(:request_body) {
+      let(:request_body) do
         {
           meme: {
             'image_url': 'https://images.unsplash.com/photo-1647549831144-09d4c521c1f1',
             'text': 'Start the way by organising your playground'
           }
         }
-      }
-      let(:request_header) {
+      end
+      let(:request_header) do
         {
           'CONTENT_TYPE' => 'application/json',
           'HTTP_AUTHORIZATION' => 'Bearer 9411a3b57f420dc9c09a25bd78ae2851'
         }
-      }
+      end
 
       it 'returns 401 error code' do
         post '/memes', request_body.to_json, request_header
