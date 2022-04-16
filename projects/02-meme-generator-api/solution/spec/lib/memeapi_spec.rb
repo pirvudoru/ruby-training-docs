@@ -178,10 +178,4 @@ end
         expect(last_response.content_type).to eq 'image/jpeg'
       end
   end
-
-
-
-  after(:suite) do
-    Database.create.delete_users
-  end
 end

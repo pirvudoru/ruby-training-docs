@@ -20,9 +20,6 @@ RSpec.describe Database do
       it 'should return true' do
         expect(db.insert_user(username, password)).to be true
       end
-      after do
-        db.delete_users
-      end
     end
 
 

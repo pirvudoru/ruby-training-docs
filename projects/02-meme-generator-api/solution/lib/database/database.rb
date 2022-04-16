@@ -77,7 +77,7 @@ class Database
     "
   end
 
-  def delete_users
+  def truncate
     @db.execute "
     DELETE FROM Users
     "
