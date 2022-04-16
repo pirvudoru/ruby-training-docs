@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
 require './app/errors/user_already_exists_error'
-require './app/errors/incorrect_user_credentials_error'
 require 'sqlite3'
-require 'securerandom'
+
 require 'bcrypt'
 
 class DBClient
@@ -22,30 +21,50 @@ class DBClient
       add_user(username, password)
     rescue SQLite3::ConstraintException
       raise UserAlreadyExistsError.new
-    else
-      token = generate_token
-      add_token(username, token)
-      token
     end
+  end
+
+  def create_token(username, token)
+    @db = SQLite3::Database.open 'USERS.db'
+    @db.execute 'INSERT INTO tokens (token, username) VALUES (?, ?)',
+                token, username
+  ensure
+    @db.close
   end
 
   def delete_user(username)
     @db = SQLite3::Database.open 'USERS.db'
     @db.execute 'DELETE FROM users WHERE username=?', username.to_s
+  ensure
+    @db.close
+  end
+
+  def delete_token(username)
+    @db = SQLite3::Database.open 'USERS.db'
     @db.execute 'DELETE FROM tokens WHERE username=?', username.to_s
   ensure
     @db.close
   end
 
-  def login_user(username, password)
-    raise IncorrectUserCredentialsError.new unless validate_password(username, password)
-
-    token = generate_token
-    add_token(username, token)
-    token
+  def get_user(username)
+    @db = SQLite3::Database.open 'USERS.db'
+    results = @db.query 'SELECT * FROM users WHERE username=?', username
+    results.next
+  ensure
+    results.close
+    @db.close
   end
 
-  def validate_user(token)
+  def get_password(username)
+    @db = SQLite3::Database.open 'USERS.db'
+    results = @db.query 'SELECT password FROM users WHERE username=?', username.to_s
+    results.next
+  ensure
+    results.close
+    @db.close
+  end
+
+  def get_token(token)
     @db = SQLite3::Database.open 'USERS.db'
     results = @db.query 'SELECT * FROM tokens WHERE token=?', token
     results.next
@@ -59,39 +78,8 @@ class DBClient
   def add_user(username, password)
     @db = SQLite3::Database.open 'USERS.db'
     @db.execute 'INSERT INTO users (username, password) VALUES (?, ?)',
-                username, encrypt_password(password)
+                username, password
   ensure
     @db.close
-  end
-
-  def add_token(username, token)
-    @db = SQLite3::Database.open 'USERS.db'
-    @db.execute 'INSERT INTO tokens (token, username) VALUES (?, ?)',
-                token, username
-  ensure
-    @db.close
-  end
-
-  def validate_password(username, password)
-    @db = SQLite3::Database.open 'USERS.db'
-    results = @db.query 'SELECT password FROM users WHERE username=?', username.to_s
-    first_result = results.next
-
-    compare_passwords(first_result[0], password) if first_result
-  ensure
-    results.close
-    @db.close
-  end
-
-  def compare_passwords(encrypted_password, plain_password)
-    BCrypt::Password.new(encrypted_password) == plain_password
-  end
-
-  def encrypt_password(password)
-    BCrypt::Password.create(password).to_s
-  end
-
-  def generate_token
-    SecureRandom.hex(16)
   end
 end
