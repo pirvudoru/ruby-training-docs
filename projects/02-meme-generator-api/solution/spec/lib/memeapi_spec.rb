@@ -57,80 +57,64 @@ RSpec.describe MemeApi do
   end
 
   describe "POST /signup" do
-    context 'with good body request' do
-      it "returns status 201" do
-        body = {
-          "user": {
-            "username": "mr_bean",
-            "password": "test123"
-          }
-        }
-        post '/signup', body.to_json, { 'CONTENT_TYPE' => 'application/json' }
+    let(:username) { "mr_bean" }
+    let(:password) { "test123" }
+    let(:user_params) do
+      {
+        "username": username,
+        "password": password
+      }
+    end
+    let(:body) do
+      {
+        "user": user_params
+      }
+    end
 
-        expect(last_response.status).to eq 201
+    subject(:signup) { post '/signup', body.to_json, { 'CONTENT_TYPE' => 'application/json' } }
+
+    it 'returns status 201' do
+      signup
+      expect(last_response.status).to eq 201
+    end
+
+    context 'with empty username' do
+      let(:username) { '' }
+
+      it 'returns status 400 and message is "Username is blank"' do
+        signup
+        expect(last_response.status).to eq 400
+        expect(JSON.parse(last_response.body)["errors"][0]["message"]).to eq "Username is blank"
       end
     end
 
-  context 'with bad body request' do
-    it "returns status 400" do
-      body = { "user": {}}
-      post '/signup', body.to_json, { 'CONTENT_TYPE' => 'application/json' }
+    context 'with missing user params' do
+      let(:user_params) { {} }
 
-      expect(last_response.status).to eq 400
+      it "returns status 400" do
+        signup
+        expect(last_response.status).to eq 400
+      end
     end
-  end
-
-  context 'with empty username request' do
-    it 'returns status 400 and message is "Username is blank"' do
-      body = {
-        "user": {
-          "username": "",
-          "password": "test123"
-        }
-      }
-      post '/signup', body.to_json, { 'CONTENT_TYPE' => 'application/json' }
-
-      expect(last_response.status).to eq 400
-      expect(JSON.parse(last_response.body)["errors"][0]["message"]).to eq "Username is blank"
-    end
-  end
 
     context 'with empty password request' do
+      let(:password) { '' }
+
       it 'returns status 400 and message is "Password is blank"' do
-        body = {
-          "user": {
-            "username": "mr_bean",
-            "password": ""
-          }
-        }
-        post '/signup', body.to_json, { 'CONTENT_TYPE' => 'application/json' }
+        signup
 
         expect(last_response.status).to eq 400
         expect(JSON.parse(last_response.body)["errors"][0]["message"]).to eq "Password is blank"
       end
     end
 
-    context 'request with existing username' do
-      let(:username) { "mr_bean" }
-
+    context 'with existing username' do
       before do
-        body = {
-          "user": {
-            "username": username,
-            "password": "asdf123"
-          }
-        }
         post '/signup', body.to_json, { 'CONTENT_TYPE' => 'application/json' }
       end
 
       it 'returns status 409' do
-        body = {
-          "user": {
-            "username": username,
-            "password": "test123"
-          }
-        }
-        post '/signup', body.to_json, { 'CONTENT_TYPE' => 'application/json' }
+        signup
 
         expect(last_response.status).to eq 409
       end
